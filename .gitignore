@@ -1,0 +1,15 @@
+# Environments
+venv/
+.env
+
+# Data Files (Keep your client data private!)
+*.xlsx
+*.html
+
+# Python System Files
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+webatlas_pipeline.log
