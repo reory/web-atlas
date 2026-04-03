@@ -67,6 +67,33 @@ python main.py --xlsx internal.xlsx All_Outlinks.xlsx atlas.html
 
 ---
 
+# 📁 Project Structure
+```
+web-atlas/
+├── webatlas/                 # Core package
+│   ├── __init__.py
+│   ├── sf_import.py          # Screaming Frog XLSX importer
+│   ├── graph_builder.py      # NetworkX graph construction + SEO logic
+│                             # PyVis HTML visualization
+│
+├── lib/                      # Additional assets or helper modules
+│   └── ...                   
+│
+├── tests/                    # Pytest suite
+│   ├── test_graph_builder.py
+│   
+│
+├── main.py                   # CLI entry point
+├── README.md                 # Project documentation
+├── CONTRIBUTING.md           # Contribution guidelines
+├── LICENSE.md                # MIT license
+├── requirements.txt          # Python dependencies
+├── pyproject.toml            # Build + metadata config
+├── demo.mp4                  # Demo video
+```
+
+---
+
 # 🧠 Why this Architecture?
 - Component Why I chose it
 - Openpyxl Allows us to read massive Excel files directly without needing a database
