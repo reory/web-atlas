@@ -3,12 +3,15 @@ name = "web-atlas"
 version = "0.1.0"
 description = "An interactive SEO internal link visualizer for Screaming Frog exports."
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Roy Peters", email = "reory35@hotmail.com"}
 ]
 dependencies = [
     "pyvis>=0.3.2",
     "networkx>=3.0",
+    "numpy>=2.5.4",
     "openpyxl>=3.1.0",
+    "pytest>=9.1.1",
+    "scipy>=1.18.1",
 ]
 
 [build-system]

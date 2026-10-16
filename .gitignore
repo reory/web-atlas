@@ -1,13 +1,15 @@
 # Environments
 venv/
 .env
-
+project_notes.txt
 # Data Files (Keep your client data private!)
 *.xlsx
 *.html
 
 # Python System Files
 __pycache__/
+.ruff_cache/
+.pytest_cache/
 *.pyc
 
 # Logs
