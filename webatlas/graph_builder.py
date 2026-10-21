@@ -8,7 +8,7 @@ from pyvis.network import Network
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MIN_DEGREE = 200
+DEFAULT_MIN_DEGREE = 50
 DEFAULT_MAX_EDGES = 2000
 DEFAULT_NODE_SIZE = 20
 NODE_SIZE_RANGE = 40
@@ -113,7 +113,7 @@ class GraphBuilder:
         # IMPORTANT: Insert node filtering
         # Adjust threshold of nodes you want to show.
         # 200 is the sweet spot any lower and you will see more nodes and their
-        # associations.
+        # associations which will overwhelm the website display.
         min_degree = DEFAULT_MIN_DEGREE
         nodes_to_remove = []
         for node, degree in G.degree():
@@ -151,7 +151,13 @@ class GraphBuilder:
             silos_dict[node_silo].append(node)
 
         # Calculate PageRank and scale nodes sizes dynamically
-        pagerank_scores = nx.pagerank(G, alpha=0.85)
+        if G.number_of_nodes() > 0:
+            pagerank_scores = nx.pagerank(G, alpha=0.85)
+        else:
+            logger.warning(
+                "Graph is empty after filtering, skipping PageRank calculation."
+            )
+            pagerank_scores = {}
 
         if pagerank_scores:
             min_pr = min(pagerank_scores.values())

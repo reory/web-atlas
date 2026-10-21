@@ -15,6 +15,7 @@ class ScreamingFrogImport:
     def __init__(self):
         self.nodes = set()
         self.edges = set()
+        self.root_url = None
         self.xpath_map = {}  # Maps URL -> XPath (or Link Position) for tooltips
         self.status_map = {} # Maps URL -> HTTP Status Code
 
@@ -82,12 +83,13 @@ class ScreamingFrogImport:
                     break
 
         if not root_url:
-            error_msg = f"Could not extract root URL from {internal_xlsx}."
+            error_msg = ( 
+            f"Could not extract root URL from {internal_xlsx}. "
             f"Detected headers were: {header}"
+            )
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-        self.root_url = root_url
         logger.info(f"Successfully loaded internal data. Root URL identified: {root_url}")
         return root_url
 
@@ -134,9 +136,10 @@ class ScreamingFrogImport:
                 )
 
         except ValueError as e:
-            error_msg = "Outlink file missing required columns"
-            "(Source/Origin, Destination/Path, Type)." 
+            error_msg = ("Outlink file missing required columns "
+            "(Source/Origin, Destination/Path, Type). " 
             f"Detected headers: {header}"
+            )
             logger.error(error_msg)
             raise ValueError(error_msg) from e
 
@@ -148,6 +151,15 @@ class ScreamingFrogImport:
         skipped_external = 0
         for row in ws.iter_rows(min_row=2, values_only=True):
             # Skip empty rows
+            required_idx = max(
+                origin_idx,
+                path_idx,
+                type_idx,
+            )
+
+            if len(row) <= required_idx:
+                continue
+
             if not row[origin_idx] or not row[path_idx]:
                 continue
 
@@ -169,6 +181,7 @@ class ScreamingFrogImport:
             if root_netloc:
                 dest_netloc = urlparse(dest).netloc
                 if dest_netloc and dest_netloc != root_netloc:
+                    skipped_external += 1
                     continue
 
             # Store Data for internal links only
