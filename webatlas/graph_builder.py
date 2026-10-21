@@ -1,13 +1,40 @@
+import json
 import logging
+from typing import Any
+from urllib.parse import urlparse
 
 import networkx as nx
 from pyvis.network import Network
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_MIN_DEGREE = 200
+DEFAULT_MAX_EDGES = 2000
+DEFAULT_NODE_SIZE = 20
+NODE_SIZE_RANGE = 40
+
+ # Status Code Colour Coding Rules
+STATUS_COLORS = {
+    "default": "#97c2fc",
+    "success": "#2ecc71",
+    "redirect": "#f1c40f",
+    "error": "#e74c3c",
+}
+
+def get_status_color(status_code):
+    if not isinstance(status_code, int):
+        return STATUS_COLORS["default"]
+    if 200 <= status_code < 300:
+        return STATUS_COLORS["success"]
+    if 300 <= status_code < 400:
+        return STATUS_COLORS["redirect"]
+    if 400 <= status_code < 600:
+        return STATUS_COLORS["error"]
+        
+    return STATUS_COLORS["default"]
 
 class GraphBuilder:
-    def __init__(self, sf_importer=None):
+    def __init__(self, sf_importer: Any | None = None) -> None:
         if sf_importer:
             self.nodes = sf_importer.nodes
             self.edges = sf_importer.edges
@@ -19,40 +46,45 @@ class GraphBuilder:
             self.xpath_map = {}
             self.status_map = {}
 
-    def build_interactive_graph(self, output_file):
+
+    def build_interactive_graph(self, output_file: str) -> None:
         """
         Generate an interactive graph from the current data 
-        with status-code color coding and inject nodeColors for utils.js.
+        with status-code color, folder silo grouping, PageRank scaling,
+        and inject nodeColors and category filters for utils.js.
         """
 
         logger.info("Initializing GraphBuilder and mapping nodes/edges....")
 
         G = nx.DiGraph()
         node_colors_dict = {}
+        silos_dict = {}
 
         for node in self.nodes:
+            # Skip URLs containing query parameters (like feeds, tracking links, parameters)
+            if "?" in node:
+                continue
             # Strip the trailing slash first, ensures you get the page name
             short_label = node.rstrip("/").split("/")[-1] or node
             # Use 'Link Position' metadata since XPath was missing in this export
             pos_info = self.xpath_map.get(node, "N/A")
             status_code = self.status_map.get(node, "Unknown")
 
-            # Status Code Colour Coding Rules
-            color = "#97c2fc" #Default blue for unknown / external
-            if isinstance(status_code, int):
-                if 200 <= status_code < 300:
-                    color = "#2ecc71" # Green: 200 Ok
-                elif 300 <= status_code < 400:
-                    color = "#f1c40f" # Yellow: 301/302 Redirects
-                elif 400 <= status_code < 600:
-                    color = "#e74c3c" # Red: 404/500 Errors
+            # Extract Folder Silo via Python string parsing
+            parsed_path = urlparse(node).path.strip("/")
+            segments = parsed_path.split("/")
+            silo = f"/{segments[0]}/" if segments and segments[0] else "Homepage"
+
+            color = get_status_color(status_code)
+
             node_colors_dict[node] = color
 
             G.add_node(
                 node,
                 label=short_label,
-                title=f"Location: {pos_info}\nFull URL: {node}",
+                title=f"Status: {status_code}\nSilo: {silo}\nLocation: {pos_info}\nFull URL: {node}",
                 color=color,
+                silo=silo,
             )
 
         # Create a mapping from clean URL to the original exact node name
@@ -82,8 +114,16 @@ class GraphBuilder:
         # Adjust threshold of nodes you want to show.
         # 200 is the sweet spot any lower and you will see more nodes and their
         # associations.
-        min_degree = 200
-        nodes_to_remove = [node for node, degree in G.degree() if degree < min_degree]
+        min_degree = DEFAULT_MIN_DEGREE
+        nodes_to_remove = []
+        for node, degree in G.degree():
+            if degree < min_degree:
+                # Check if this node is the homepage (root path is empty or "/")
+                parsed_path = urlparse(node).path.strip("/")
+                if parsed_path == "":
+                    continue
+                nodes_to_remove.append(node)
+
         G.remove_nodes_from(nodes_to_remove)
         #--------------------------------------------------------------------
 
@@ -91,7 +131,7 @@ class GraphBuilder:
         G.remove_edges_from(list(nx.selfloop_edges(G)))
         
         # Edge capping for heavy graphs
-        max_edges = 2000
+        max_edges = DEFAULT_MAX_EDGES
         if G.number_of_edges() > max_edges:
             # Create a new graph or remove excess edges
             excess_edges = list(G.edges())[max_edges:]
@@ -99,6 +139,16 @@ class GraphBuilder:
 
         # Prune the color dict to match only the nodes that survived the filtering
         node_colors_dict = {node: color for node, color in node_colors_dict.items() if node in G}
+
+        # Build surviving silos dictionary for UI filtering
+        for node in G.nodes():
+            parsed_path = urlparse(node).path.strip("/")
+            segments = parsed_path.split("/")
+            node_silo = f"/{segments[0]}/" if segments and segments[0] else "Homepage"
+
+            if node_silo not in silos_dict:
+                silos_dict[node_silo] = []
+            silos_dict[node_silo].append(node)
 
         # Calculate PageRank and scale nodes sizes dynamically
         pagerank_scores = nx.pagerank(G, alpha=0.85)
@@ -112,7 +162,8 @@ class GraphBuilder:
                 score = pagerank_scores.get(node, min_pr)
                 # Normalise between 0 and 1, then scale to a pixel size range.
                 norm_score = (score - min_pr) / pr_range
-                node_size = int(20 + (norm_score * 40))
+                node_size = int(DEFAULT_NODE_SIZE + (norm_score * 
+                NODE_SIZE_RANGE))
                 G.nodes[node]["size"] = node_size
 
                 # Append PageRank score to the hover tooltip title
@@ -212,10 +263,84 @@ class GraphBuilder:
             </script>
             """
 
-            color_injection = f"\n<script>\nvar nodeColors = {node_colors_dict};\n</script>\n"
+            # Safely serialize Python dicts to JS using json.dumps
+            color_injection = f"""
+            <script>
+            var nodeColors = {json.dumps(node_colors_dict)};
+            var silosMap = {json.dumps(silos_dict)};
+            </script>
+            """
 
-            # Inject both into HTML body/end
-            html_content = html_content.replace("</body>", physics_freeze_script + color_injection + "</body>")
+            # Interactive Silo Toolbar HTML & JavaScript Control
+            silo_toolbar_html = """
+            <div id="silo-toolbar" style="position: absolute; top: 15px; left: 15px; z-index: 1000; background: rgba(255, 255, 255, 0.95); padding: 10px 14px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); font-family: sans-serif; width: 320px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 12px; color: #333;">Folder Silos:</strong>
+                    <div style="font-size: 10px; display: flex; gap: 6px;">
+                        <span style="color: #2ecc71; font-weight: bold;">■ 200</span>
+                        <span style="color: #f1c40f; font-weight: bold;">■ Redirect</span>
+                        <span style="color: #e74c3c; font-weight: bold;">■ Error</span>
+                    </div>
+                </div>
+                <div id="silo-buttons" style="display: flex; flex-wrap: wrap; gap: 4px; max-height: 130px; overflow-y: auto; padding-right: 4px;">
+                    <button onclick="filterSilo('ALL', this)" style="padding: 3px 8px; font-size: 10px; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 4px;">All</button>
+                </div>
+            </div>
+            <script type="text/javascript">
+                window.addEventListener("load", function() {
+                    if (typeof silosMap !== "undefined" && document.getElementById("silo-buttons")) {
+                        const container = document.getElementById("silo-buttons");
+                        Object.keys(silosMap).forEach(silo => {
+                            const btn = document.createElement("button");
+                            btn.innerText = silo;
+                            btn.style.padding = "3px 8px";
+                            btn.style.fontSize = "10px";
+                            btn.style.cursor = "pointer";
+                            btn.style.background = "#e0e0e0";
+                            btn.style.color = "#333";
+                            btn.style.border = "none";
+                            btn.style.borderRadius = "4px";
+                            btn.onclick = () => filterSilo(silo, btn);
+                            container.appendChild(btn);
+                        });
+                    }
+                });
+
+                function filterSilo(targetSilo, clickedBtn) {
+                    if (typeof nodes === "undefined") return;
+                    
+                    // Update active button styles across the toolbar
+                    const allButtons = document.querySelectorAll("#silo-buttons button");
+                    allButtons.forEach(b => {
+                        b.style.background = "#e0e0e0";
+                        b.style.color = "#333";
+                    });
+                    if (clickedBtn) {
+                        clickedBtn.style.background = "#333";
+                        clickedBtn.style.color = "#fff";
+                    }
+
+                    const allNodes = nodes.get();
+                    const targetList = silosMap[targetSilo] || [];
+
+                    const updatedNodes = allNodes.map(node => {
+                        if (targetSilo === 'ALL') {
+                            node.hidden = false;
+                        } else {
+                            // Check exact ID match or fuzzy match
+                            const isMatch = targetList.includes(node.id) || targetList.some(item => node.id.includes(item) || item.includes(node.id));
+                            node.hidden = !isMatch;
+                        }
+                        return node;
+                    });
+                    nodes.update(updatedNodes);
+                }
+            </script>
+            """
+
+            # Correctly replace single </body> without duplicating it
+            injection_payload = physics_freeze_script + color_injection + silo_toolbar_html + "\n</body>"
+            html_content = html_content.replace("</body>", injection_payload)
 
             with open(output_file, "w", encoding="utf-8") as f:
                 f.write(html_content)

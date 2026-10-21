@@ -21,7 +21,7 @@ WebAtlas is a Python-based technical SEO tool that transforms flat Screaming Fro
 - Green Nodes: The vast majority of the dots are green, representing healthy pages returning a 200 OK status code.
 - Red Nodes: A scattering of red dots is mixed throughout the structure, pinpointing specific pages with HTTP errors (such as 404 or 500 errors).
 
-![](screenshots/Screenshot%202026-10-15%20232212.png)
+![](screenshots/webatlas.png)
 
 ---
 
@@ -135,7 +135,7 @@ tests/ to ensure the "mothball" logic and XPath mapping are functioning correctl
 
 - [x] **PageRank Node Scaling:** Use NetworkX to calculate incoming link volume, dynamically scaling node sizes by page rank and importance.
 
-- [ ] **Folder Silo Grouping:** Group URLs by subfolder path via Python string parsing to color-code architectural silos and add category toggles.
+- [x] **Folder Silo Grouping:** Group URLs by subfolder path via Python string parsing to color-code architectural silos and add category toggles.
 
 - [ ] **Temporal Crawl Diffing ("Time-Travel" View):**
 
