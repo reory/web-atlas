@@ -72,6 +72,7 @@ def main():
         TypeError,
     ):
         logger.exception("Pipeline Failed:")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -131,30 +131,26 @@ tests/ to ensure the "mothball" logic and XPath mapping are functioning correctl
 
 ## 🛣️ Roadmap Features
 
-- [x] **Status Code Color-Coding:** Pull HTTP status codes in sf_import.py to visually flag site health (Green: 200 OK, Yellow: 301/302 Redirects, Red: 404/500 Errors).
+- [x] **Status Code Color-Coding:**  
+  Color pages by HTTP status to highlight site health issues at a glance.
 
-- [x] **PageRank Node Scaling:** Use NetworkX to calculate incoming link volume, dynamically scaling node sizes by page rank and importance.
+- [x] **PageRank Node Scaling:**  
+  Scale node size using NetworkX PageRank to emphasize structurally important pages.
 
-- [x] **Folder Silo Grouping:** Group URLs by subfolder path via Python string parsing to color-code architectural silos and add category toggles.
+- [x] **Folder Silo Grouping:**  
+  Group URLs by folder structure and provide interactive silo filtering.
 
-- [ ] **Temporal Crawl Diffing ("Time-Travel" View):**
+- [ ] **Interactive Graph Density Filters:**  
+  Add Degree and PageRank sliders to dynamically reveal or hide graph complexity.
 
-    Ingest and diff two separate crawl exports in `sf_import.py` to track structural changes over time.
+- [ ] **Temporal Crawl Diffing ("Time-Travel"):**  
+  Compare two crawls to visualize new, removed, and changed pages over time.
 
-    The Visual: * Green: New pages  
-    * Red: Deleted/removed pages  
-    * Glowing Borders: Changed status/redirects between deployments
+- [ ] **Interactive Pathfinding & Bottleneck Analysis:**  
+  Highlight shortest paths, redirect chains, orphan pages, and structural bottlenecks.
 
-- [ ] **Interactive Pathfinding & Bottleneck Analysis:**
-
-    Use NetworkX pathfinding algorithms on the backend to trace routing paths between source and target nodes.
-
-    The Visual: Highlight the exact routing path, isolate redirection chains (e.g., 301 -> 302 -> 200), and flag structural dead-ends or orphan bottlenecks.
-
-- [ ] **ML-Powered Architectural Anomaly Detection:**
-    Use a `scikit-learn` Isolation Forest model on node metrics (PageRank, in/out-degree ratios, crawl depth) to detect outliers.
-
-    The Visual: An "Anomaly Filter" toggle dims normal pages and isolates hidden loops, orphan clusters, or bloated subsections.
+- [ ] **ML-Powered Architectural Anomaly Detection:**  
+  Use Isolation Forest models to surface unusual pages, clusters, and linking patterns.
 
 ---
 

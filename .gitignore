@@ -5,6 +5,7 @@ project_notes.txt
 # Data Files (Keep your client data private!)
 *.xlsx
 *.html
+*.xml
 
 # Python System Files
 __pycache__/
