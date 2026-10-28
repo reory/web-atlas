@@ -7,7 +7,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl.*")
 
 from webatlas.graph_builder import GraphBuilder
-from webatlas.sf_import import ScreamingFrogImport
+from webatlas.sf_imports import ScreamingFrogImport
 
 # --- LOGGING CONFIGURATION ---
 logging.basicConfig(
@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 
 def parse_args():
+    """
+    Parse command-line arguments for the 
+    application and return the parsed namespace.
+    """
+
     parser = argparse.ArgumentParser(
         description="WebAtlas - Build an interactive link graph"
     )
