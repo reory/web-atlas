@@ -1,4 +1,5 @@
 # 🕸️ WebAtlas: Interactive SEO Link Visualiser
+
 ![Last Commit](https://img.shields.io/github/last-commit/reory/web-atlas?cacheSeconds=60)
 ![Repo Size](https://img.shields.io/github/repo-size/reory/web-atlas?cacheSeconds=60)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -11,12 +12,29 @@
 ![SciPy](https://img.shields.io/badge/SciPy-1.x-blue.svg)
 
 
-Interactive SEO Link Visualizer for Screaming Frog Exports.
-WebAtlas is a Python-based technical SEO tool that transforms flat Screaming Frog Excel exports into dynamic, interactive network graphs. It allows SEOs to visualize internal linking structures, identify crawl depth issues, and discover topical silos that are invisible in standard spreadsheets.
+Interactive SEO Link Visualiser for Screaming Frog Exports.
+WebAtlas is a Python-based technical SEO tool that transforms flat Screaming Frog Excel exports into dynamic, interactive network graphs. It allows SEOs to visualise internal linking structures, identify crawl depth issues, and discover topical silos that are invisible in standard spreadsheets.
+
+---
+
+## 📑Table of Contents
+
+- [Screenshots](#-screenshot-of-the-seo-link-visualiser)
+- [The Core Problem & Solution](#-the-core-problem--solution)
+- [Key Features](#-key-features)
+- [Installation & Setup](#️-installation)
+- [Usage](#-usage)
+- [Tech Stack](#tech-stack)
+- [Project Architecture](#-project-architecture)
+- [How to Read the Mothball](#️️-how-to-read-the-mothball)
+- [Testing](#-tests)
+- [Roadmap Features](#️-roadmap-features)
 
 ---
 
 ## 📸 Screenshot of the SEO Link Visualiser
+
+![Screenshot of the Dashboard](screenshots/webatlas1.png)
 
 - Status Color Breakdown:
 
@@ -30,15 +48,13 @@ WebAtlas is a Python-based technical SEO tool that transforms flat Screaming Fro
 
 - Folder Silos: Groups URLs by directory structure, allowing instant filtering to specific site sections.
 
-![](screenshots/webatlas1.png)
-
 ---
 
 ## 🚀 The Core Problem & Solution
 
-- The "Graphviz Nightmare"Initially, this project attempted to use Graphviz (the industry standard for diagramming). However, I encountered a major hurdle:
-- Graphviz is designed for Hierarchical Trees (like org charts).
-- Websites are Non-Linear Networks (where any page can link to any other page).
+- The "Graphviz Nightmare" Initially, this project attempted to use Graphviz (the industry standard for diagramming). However, I encountered a major hurdle:
+- Graphviz is designed for hierarchical trees (like org charts).
+- Websites are non-linear networks (where any page can link to any other page).
 When Graphviz tries to force a website into a tree structure, it results in an "infinite vertical strip" that is impossible to read or navigate.
 - The "PyVis" Evolution
 I pivoted to NetworkX (for the mathematical graph logic) and PyVis (for the browser-based visualization).
@@ -49,9 +65,9 @@ I pivoted to NetworkX (for the mathematical graph logic) and PyVis (for the brow
 
 ## ✨ Key Features
 - Interactive Hover Tooltips: Nodes are labeled with short, clean URLs (slugs), but hovering over them reveals the full URL and the exact XPath/Link Position where the link was found.
-- Noise Reduction: Automatically filters out non-hyperlinks (Images, CSS, JS, etc.) to focus specifically on the "Internal Link Ecosystem.
+- Noise Reduction: Automatically filters out non-hyperlinks (Images, CSS, JS, etc.) to focus specifically on the "Internal Link Ecosystem".
 - Performance Optimized: Uses the Barnes-Hut physics engine and stabilization iterations to ensure that even large sites (the "Mothball" effect) load quickly in the browser.
-- Dark Mode toggle Visualization: Designed with a high-contrast dark theme for better visibility of complex link paths.
+- Dark Mode Toggle: Designed with a high-contrast dark theme for better visibility of complex link paths.
 
 ---
 
@@ -59,21 +75,26 @@ I pivoted to NetworkX (for the mathematical graph logic) and PyVis (for the brow
 Ensure you have Python 3.10+ installed.
 
 ### Clone the repository:
+
 ```Bash
 git clone https://github.com/reory/web-atlas.git
 cd web-atlas
 ```
 ### Install dependencies:
+
 ```Bash
-pip install pyvis networkx openpyxl
+pip install pyvis networkX openpyxl
 ```
 
 ---
 
 ## 📂 Usage
-- To generate your interactive map, you need two exports from Screaming Frog (XLSX format):Internal (All HTML pages)All Outlinks (The massive list of every link found)
+- To generate an interactive map, export the following reports from Screaming Frog:
+- Internal (All HTML pages)
+- All Outlinks (The massive list of every link found)
 
 ### Run the following command:
+
 PowerShell
 ```bash
 python main.py --xlsx internal.xlsx All_Outlinks.xlsx atlas.html
@@ -85,13 +106,14 @@ python main.py --xlsx internal.xlsx All_Outlinks.xlsx atlas.html
 ## Tech Stack
 
 * **PyVis** is a Python library built specifically for creating interactive network graphs that run in a web browser.
-* **Networkx** Performs advanced SEO analysis, such as identifying "Orphan Pages" (nodes with no incoming edges) or calculating "PageRank" to see which pages hold the most authority.
-* **OpenPyxl** is a library used to read and write Excel (.xlsx) files.
+* **NetworkX** Performs advanced SEO analysis, such as identifying "Orphan Pages" (nodes with no incoming edges) or calculating "PageRank" to see which pages hold the most authority.
+* **Openpyxl** is a library used to read and write Excel (.xlsx) files.
 
 ---
 
 ## 📁 Project Structure
-```
+
+```plaintext
 web-atlas/
 ├── webatlas/                 # Core package
 │   ├── __init__.py
@@ -123,14 +145,17 @@ web-atlas/
 ---
 
 ## 🧠 Why this Architecture?
-- Component Why I chose it
-- Openpyxl Allows us to read massive Excel files directly without needing a database
-- NetworkX The "brain" of the project. It handles the complex math of linking thousands of nodes.
-- PyVis The "beauty." It turns the math into an interactive HTML/JavaScript experience that runs in any browser.
+
+| Component | Purpose |
+|-----------|---------|
+| openpyxl | Reads Screaming Frog XLSX exports |
+| NetworkX | Handles graph analysis and PageRank calculations |
+| PyVis | Renders interactive browser-based graph visualisations |
 
 ---
 
 ## 🕵️‍♂️ How to Read the "Mothball"
+
 - When you first open your graph, you might see a dense cluster (a "mothball"). Here’s how to audit it:
 - The Core: The center of the ball usually contains your Header and Footer links.
 - The Planets: Small clusters orbiting the main ball are often your Blog categories or Service silos.
@@ -140,12 +165,14 @@ web-atlas/
 ---
 
 ## 🧪 Tests
-- The project includes a Pytest suite to validate graph initialization and data integrity. 
+
+- The project includes a Pytest suite to validate graph initialization and data integrity.
+ 
 - Run 
 ```bash
 pytest
 ```
-tests/ to ensure the "mothball" logic and XPath mapping are functioning correctly before deployment.
+to ensure the "mothball" logic and XPath mapping are functioning correctly before deployment.
 
 ---
 
@@ -170,7 +197,7 @@ tests/ to ensure the "mothball" logic and XPath mapping are functioning correctl
   Extract inline JavaScript and HTML toolbar strings into dedicated template files to improve syntax highlighting, linting, and maintainability.
 
 - [ ] **Temporal Crawl Diffing ("Time-Travel"):**  
-  Compare two crawls to visualize new, removed, and changed pages over time.
+  Compare two crawls to visualise new, removed, and changed pages over time.
 
 - [ ] **Interactive Pathfinding & Bottleneck Analysis:**  
   Highlight shortest paths, redirect chains, orphan pages, and structural bottlenecks.

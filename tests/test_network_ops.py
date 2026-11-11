@@ -1,6 +1,5 @@
 import networkx as nx
 import pytest  #noqa
-
 from webatlas.graph_builder import network_ops
 from webatlas.graph_builder.network_ops import (
     apply_filters_and_pagerank,

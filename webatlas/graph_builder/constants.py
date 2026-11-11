@@ -14,6 +14,8 @@ STATUS_COLORS = {
 }
 
 def get_status_color(status_code):
+    """Returns the display colour associated with an HTTP status code."""
+
     if not isinstance(status_code, int):
         return STATUS_COLORS["default"]
     if 200 <= status_code < 300:

@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest  #noqa
 from pyvis.network import Network
-
 from webatlas.graph_builder.html_injector import inject_custom_html
 
 

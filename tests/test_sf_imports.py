@@ -2,7 +2,6 @@ from pathlib import Path
 
 import openpyxl
 import pytest
-
 from webatlas.sf_imports import ScreamingFrogImport
 
 
