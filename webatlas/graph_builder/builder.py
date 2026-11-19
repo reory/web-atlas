@@ -30,7 +30,7 @@ class GraphBuilder:
         folder silo grouping, PageRank scaling, and custom HTML/JS injection.
         """
 
-        logger.info("Initializing GraphBuilder and mapping nodes/edges....")
+        logger.info("Initialising GraphBuilder and mapping nodes/edges....")
 
         # Build base NetworkX graph
         G, node_colors_dict = build_networkx_graph(
@@ -45,7 +45,7 @@ class GraphBuilder:
         logger.info(f"Filtered out {len(nodes_to_remove)} low-degree nodes (degree < {DEFAULT_MIN_DEGREE}).")
         logger.info(f"Remaining nodes for visualisation: {G.number_of_nodes()}")
 
-        # Initialize PyVis Network and apply layout options
+        # Initialise PyVis Network and apply layout options
         net = configure_pyvis_network(G)
 
         # Save output and inject custom toolbar / scripts

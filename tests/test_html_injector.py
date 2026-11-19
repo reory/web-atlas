@@ -7,7 +7,7 @@ from webatlas.graph_builder.html_injector import inject_custom_html
 
 def test_inject_custom_html_success(tmp_path, monkeypatch):
     """
-    Verify inject_custom_html normalizes extensions, 
+    Verify inject_custom_html normalises extensions, 
     writes output, and injects custom JS/HTML.
     """
     
@@ -18,7 +18,7 @@ def test_inject_custom_html_success(tmp_path, monkeypatch):
     monkeypatch.setattr(Network, "show", mock_show)
 
     # Pass a filename without .html to test extension correction
-    output_target = tmp_path / "visualization_output"
+    output_target = tmp_path / "visualisation_output"
     net = Network()
     
     node_colors_dict = {"https://example.com/": "#2ecc71"}
@@ -26,8 +26,8 @@ def test_inject_custom_html_success(tmp_path, monkeypatch):
 
     inject_custom_html(net, str(output_target), node_colors_dict, silos_dict)
 
-    # Verify extension was normalized to .html
-    expected_file = tmp_path / "visualization_output.html"
+    # Verify extension was normalised to .html
+    expected_file = tmp_path / "visualisation_output.html"
     assert expected_file.exists()
 
     # Read back the injected HTML content

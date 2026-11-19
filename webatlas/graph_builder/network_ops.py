@@ -24,7 +24,7 @@ def build_networkx_graph(
 ) -> tuple[nx.DiGraph, dict[str, str]]:
     """Construct the initial directed NetworkX graph and color dictionary."""
 
-    logger.info("Initializing GraphBuilder and mapping nodes/edges....")
+    logger.info("Initialising GraphBuilder and mapping nodes/edges....")
 
     G = nx.DiGraph()
     node_colors_dict = {}

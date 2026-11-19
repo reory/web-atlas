@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class ScreamingFrogImport:
     """
-    Universal Screaming Frog importer optimized for PyVis visualization.
+    Universal Screaming Frog importer optimised for PyVis visualisation.
     Filters out non-hyperlinks to keep the graph fast and clean.
     """
 
@@ -171,7 +171,7 @@ class ScreamingFrogImport:
             link_path = str(row[path_idx])
             xpath_value = row[xpath_idx] if xpath_idx is not None else "N/A"
 
-            # Normalize Destination URL
+            # Normalise Destination URL
             if link_path.startswith(("http://", "https://")):
                 dest = link_path
             else:

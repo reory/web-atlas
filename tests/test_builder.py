@@ -18,7 +18,7 @@ class TestGraphBuilder:
 
     def test_init_empty(self):
         """
-        Verify GraphBuilder initializes with empty 
+        Verify GraphBuilder initialises with empty 
         collections when no importer is provided.
         """
 

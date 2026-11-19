@@ -32,7 +32,7 @@ def inject_custom_html(
         with open(output_file, "r", encoding="utf-8") as f:
                 html_content = f.read()
 
-        # Script to freeze physics completely once stabilization completes
+        # Script to freeze physics completely once stabilisation completes
         physics_freeze_script = """
         <script type="text/javascript">
             window.addEventListener("load", function() {
@@ -45,7 +45,7 @@ def inject_custom_html(
         </script>
         """
 
-        # Safely serialize Python dicts to JS using json.dumps
+        # Safely serialise Python dicts to JS using json.dumps
         color_injection = f"""
         <script>
         var nodeColors = {json.dumps(node_colors_dict)};

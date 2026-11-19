@@ -7,7 +7,7 @@ from pyvis.network import Network
 def configure_pyvis_network(G: nx.DiGraph) -> Network:
     """Initialise PyVis network instance and apply physical simulation options."""
 
-# Optimization: Initialise PyVis
+# Optimisation: Initialise PyVis
     net = Network(
         height="750px",
         width="100%",

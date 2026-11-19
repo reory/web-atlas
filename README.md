@@ -205,6 +205,9 @@ to ensure the "mothball" logic and XPath mapping are functioning correctly befor
 - [ ] **ML-Powered Architectural Anomaly Detection:**  
   Use Isolation Forest models to surface unusual pages, clusters, and linking patterns.
 
+- [ ] **Native Rust Graph Acceleration:** 
+Introduce an optional Rust-powered analytics engine for large-scale crawl datasets. Offload compute-heavy graph operations such as PageRank, shortest-path analysis, centrality metrics, and future graph algorithms to a PyO3-backed Rust extension while preserving the existing Python workflow.
+
 ---
 
 * **Built by Roy Peters** 😁
